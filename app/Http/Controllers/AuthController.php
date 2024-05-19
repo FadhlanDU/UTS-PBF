@@ -2,14 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
-class AuthController extends Controller
-{
-    <?php
-
-namespace App\Http\Controllers;
-
 use Firebase\JWT\JWT;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Http\Request;
@@ -76,7 +68,7 @@ class AuthController extends Controller
 
         $jwt = JWT::encode($payload, env('FIREBASE_SECRET_KEY'), 'HS256');
 
-        return response()->json(['access_token' => $jwt, 'token_type' => 'Bearer']);
+        return response()->json(['access_token' => 'Bearer '.$jwt]);
     }
 
     public function logout(Request $request)
@@ -109,7 +101,7 @@ class AuthController extends Controller
 
             if ($user) {
                 $payload = [
-                    'iss' => 'projectutsfawaz.com',
+                    'iss' => 'utspbf.com',
                     'iat' => time(),
                     'exp' => time() + 3600,
                     'sub' => $user->id,
@@ -120,17 +112,17 @@ class AuthController extends Controller
 
                 $jwt = JWT::encode($payload, env('FIREBASE_SECRET_KEY'), 'HS256');
 
-                return response()->json(['access_token' => $jwt, 'token_type' => 'Bearer']);
+                return response()->json(['access_token' => 'Bearer '.$jwt]);
             } else {
                 $user = User::create([
                     'name' => $googleUser->name,
                     'email' => $googleUser->email,
-                    'password' => Hash::make('Pengen_masuk'),
+                    'password' => Hash::make('inisaya'),
                     'role' => 'user',
                 ]);
 
                 $payload = [
-                    'iss' => 'projectutsfawaz.com',
+                    'iss' => 'utspbf.com',
                     'iat' => time(),
                     'exp' => time() + 3600,
                     'sub' => $user->id,
@@ -141,12 +133,11 @@ class AuthController extends Controller
 
                 $jwt = JWT::encode($payload, env('FIREBASE_SECRET_KEY'), 'HS256');
 
-                return response()->json(['access_token' => $jwt, 'token_type' => 'Bearer']);
+                return response()->json(['access_token' => 'Bearer '.$jwt]);
             }
         } catch (\Exception $e) {
             Log::error('Google authentication failed', ['exception' => $e->getMessage()]);
             return response()->json(['Gagal Autentikasi dengan Google: ' . $e->getMessage()], 500);
         }
     }
-}
 }
